@@ -33,12 +33,15 @@ export default store;
 // app.ts
 import store from "./store";
 
-const count = store.getters.getCount;
+let count = store.getters.getCount;
 console.log(count); // 0
 
 store.dispatch("incrementCount");
-const countDoubled = store.getters.getCount;
-console.log(count); // 2
+count = store.getters.getCount;
+console.log(count); // 1
+
+const countDoubled = store.getters.getCountDoubled;
+console.log(countDoubled); // 2
 ```
 
 ## Test
