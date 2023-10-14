@@ -1,12 +1,19 @@
-# reactx-state-management
+# framework-agnostic-vuex
 
-> Type safety is a WIP
+**framework-agnostic-vuex** is a lightweight, framework-agnostic state management library. While it's designed to be especially friendly for React developers, its core design principles make it usable across different JavaScript frameworks.
 
-## Example
+> 🚧 Type safety is currently in development.
+
+## Quick Start
+
+### Setting up the Store
+
+In this example, we'll set up a simple store that keeps track of a count.
+
+**store.ts**:
 
 ```ts
-// store.ts
-const options = {
+const storeOptions = {
   state: {
     count: 0,
   },
@@ -27,24 +34,34 @@ const options = {
   },
 };
 
-const store = new Store(options);
+const store = new Store(storeOptions);
 export default store;
-
-// app.ts
-import store from "./store";
-
-let count = store.getters.getCount;
-console.log(count); // 0
-
-store.dispatch("incrementCount");
-count = store.getters.getCount;
-console.log(count); // 1
-
-const countDoubled = store.getters.getCountDoubled;
-console.log(countDoubled); // 2
 ```
 
-## Test
+### Using the Store in Your Application
+
+**app.ts**:
+
+```ts
+import store from "./store";
+
+// Fetching the count from store
+let count = store.getters.getCount;
+console.log(count); // Outputs: 0
+
+// Dispatching an action to increment the count
+store.dispatch("incrementCount");
+count = store.getters.getCount;
+console.log(count); // Outputs: 1
+
+// Fetching a derived value from the store
+const countDoubled = store.getters.getCountDoubled;
+console.log(countDoubled); // Outputs: 2
+```
+
+## Running Tests
+
+To ensure the integrity of your state management setup, you can run tests using the following command:
 
 ```bash
 npm run test

@@ -1,54 +1,77 @@
-export class Store {
-  private state: { [key: string]: any };
-  private actions: { [key: string]: any };
-  private mutations: { [key: string]: any };
-  private getterFunctions: { [key: string]: any };
-  public getters: { [key: string]: any };
+type State = Record<string, any>;
 
-  constructor({ state, actions, mutations, getters }: any) {
+interface Actions {
+  [key: string]: (context: StoreContext, payload?: any) => void;
+}
+
+interface Mutations {
+  [key: string]: (state: State, payload?: any) => void;
+}
+
+interface Getters {
+  [key: string]: (state: State) => any;
+}
+
+interface StoreOptions {
+  state?: State;
+  actions?: Actions;
+  mutations?: Mutations;
+  getters?: Getters;
+}
+
+interface StoreContext {
+  state: State;
+  getters: Record<string, any>;
+  mutations: Mutations;
+  actions: Actions;
+  dispatch: (action: string, payload?: any) => void;
+  commit: (mutation: string, payload?: any) => void;
+}
+
+export class Store {
+  private state: State;
+  private actions: Actions;
+  private mutations: Mutations;
+  private getterFunctions: Getters;
+  public getters: Record<string, any>;
+  private context: StoreContext;
+
+  constructor({ state, actions, mutations, getters }: StoreOptions) {
     this.state = state || {};
     this.actions = actions || {};
     this.mutations = mutations || {};
     this.getterFunctions = getters || {};
     this.getters = new Proxy(this.getterFunctions, {
-      get: (targetGetter: any, getterName: string) => {
+      get: (targetGetter: Getters, getterName: string) => {
         const getter = targetGetter[getterName];
         return getter(this.state);
       },
     });
-  }
 
-  private getContext() {
-    const context = {
-      state: { ...this.state },
-      getters: { ...this.getters },
-      mutations: { ...this.mutations },
-      actions: { ...this.actions },
-      //? ensure that `this` within methods refer to the store instance, not object calling it
+    this.context = {
+      state: this.state,
+      getters: this.getters,
+      mutations: this.mutations,
+      actions: this.actions,
       dispatch: this.dispatch.bind(this),
       commit: this.commit.bind(this),
     };
-    return context;
   }
 
-  private commit(action: string, payload: any) {
-    const context = this.getContext();
-    const mutation = context.mutations[action];
+  private commit(mutationType: string, payload?: any) {
+    const mutation = this.context.mutations[mutationType];
     if (!mutation) {
-      throw new Error(`Mutation ${action} does not exist`);
+      throw new Error(`Mutation ${mutationType} does not exist`);
     }
-
     mutation(this.state, payload);
   }
 
-  public dispatch(action: string, payload: any) {
-    const context = this.getContext();
-    const actionFn = context.actions[action];
+  public dispatch(action: string, payload?: any) {
+    const actionFn = this.context.actions[action];
     if (!actionFn) {
       throw new Error(`Action ${action} does not exist`);
     }
-
-    actionFn(context, payload);
+    actionFn(this.context, payload);
   }
 
   public mapGetters() {

@@ -22,19 +22,19 @@ const store = new Store({
   },
 });
 
-test("store has accessable mutations", () => {
+test("store has accessible mutations", () => {
   assert(Object.keys((store as any).mutations).length > 0);
 });
 
-test("store has accessable actions", () => {
+test("store has accessible actions", () => {
   assert(Object.keys((store as any).actions).length > 0);
 });
 
-test("store has accessable getters", () => {
+test("store has accessible getters", () => {
   assert(Object.keys((store as any).getterFunctions).length > 0);
 });
 
-test("store has accessable state", () => {
+test("store has accessible state", () => {
   assert(Object.keys((store as any).state).length > 0);
 });
 
